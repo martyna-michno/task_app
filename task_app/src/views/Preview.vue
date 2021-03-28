@@ -1,10 +1,8 @@
 <template>
-  <div>
- Preview
-  </div>
+  <div>Preview</div>
 </template>
 <script>
 export default {
-  name: 'Preview'
-}
+  name: "Preview",
+};
 </script>

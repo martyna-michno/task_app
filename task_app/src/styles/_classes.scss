@@ -1,1 +1,18 @@
 @import "./variables";
+
+.font-weight-500 {
+  font-weight: 500;
+}
+.cursor-pointer {
+  cursor: pointer;
+}
+
+.background-pink {
+  background: $pink;
+}
+.color-purple {
+  color: $primary;
+}
+.color-purple:hover {
+  color: $success;
+}

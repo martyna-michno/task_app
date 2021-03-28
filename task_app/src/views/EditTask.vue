@@ -1,10 +1,8 @@
 <template>
-  <div>
-    EditTask
-  </div>
+  <div>EditTask</div>
 </template>
 <script>
 export default {
-  name: 'EditTask'
-}
+  name: "EditTask",
+};
 </script>
