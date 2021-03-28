@@ -1,0 +1,8 @@
+@import "./variables";
+
+.form-control.focus {
+  border-color: $primary;
+  box-shadow: 0 0 0 0.2rem rgb(51 61 121 / 25%);
+}
+
+@import "../../node_modules/bootstrap/scss/bootstrap";
