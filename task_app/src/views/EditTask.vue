@@ -14,7 +14,6 @@
 </template>
 <script>
 import FormTask from "@/components/FormTask";
-import { mapState } from "vuex";
 import { MODES } from "@/consts";
 
 export default {
@@ -27,9 +26,6 @@ export default {
       type: [Number, String],
       required: true,
     },
-  },
-  computed: {
-    ...mapState(["tasks"]),
   },
   created() {
     this.MODES = MODES;
