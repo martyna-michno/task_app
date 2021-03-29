@@ -319,6 +319,14 @@ export default {
         });
     },
     save() {
+      if (!this.form.title || !this.form.text || !this.form.deadline || !this.form.performer) {
+        Swal.fire({
+          icon: "warning",
+          title: "Fill in the required fields!",
+          text: "They are marked with an asterisk",
+        });
+        return;
+      }
       if (this.isAddMode) {
         this.addTask();
       } else {
