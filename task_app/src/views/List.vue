@@ -1,118 +1,124 @@
 <template>
   <div>
-    <b-modal id="comment-modal" hide-footer hide-header>
-      <div>
-        <div
-          class="alert background-pink d-flex align-items-center justify-content-center flex-column mt-4 text-center"
-          role="alert"
-        >
-          Comments are unremovable, you can read them only in preview mode.
-        </div>
-        <div class="row mt-4">
-          <div class="col-md-3 d-flex font-weight-500">Comment task</div>
-          <div class="col-md-9">
-            <b-form-textarea
-              id="textarea"
-              v-model="comment"
-              placeholder="Enter task's comment"
-              rows="3"
-            ></b-form-textarea>
+    <template v-if="loading">
+      <Loader />
+    </template>
+    <template v-else>
+      <b-modal id="comment-modal" hide-footer hide-header>
+        <div>
+          <div
+            class="alert background-pink d-flex align-items-center justify-content-center flex-column mt-4 text-center"
+            role="alert"
+          >
+            Comments are unremovable, you can read them only in preview mode.
+          </div>
+          <div class="row mt-4">
+            <div class="col-md-3 d-flex font-weight-500">Comment</div>
+            <div class="col-md-9">
+              <b-form-textarea
+                id="textarea"
+                v-model="comment"
+                placeholder="Enter task's comment"
+                rows="3"
+              ></b-form-textarea>
+            </div>
+          </div>
+          <div class="row mt-4 d-flex justify-content-end">
+            <b-button @click="hideModal" variant="outline-danger" class="mr-2"
+              >Cancel</b-button
+            >
+            <b-button @click="addComment" variant="success" class="mr-2"
+              >Add comment</b-button
+            >
           </div>
         </div>
-        <div class="row mt-4 d-flex justify-content-end">
-          <b-button @click="hideModal" variant="outline-danger" class="mr-2"
-            >Cancel</b-button
-          >
-          <b-button @click="addComment" variant="success" class="mr-2"
-            >Add comment</b-button
-          >
+      </b-modal>
+      <Card :title="'The List of added tasks'">
+        <div
+          class="alert background-pink d-flex align-items-center justify-content-center flex-column mx-2"
+          role="alert"
+        >
+          You can edit or delete only tasks with "new" status.
         </div>
-      </div>
-    </b-modal>
-    <Card :title="'List of added tasks'">
-      <div
-        class="alert background-pink d-flex align-items-center justify-content-center flex-column mx-2"
-        role="alert"
-      >
-        You can edit or delete only these tasks, which status is "new".
-      </div>
-      <DataTable
-        :value="tasks"
-        show-gridlines
-        class="p-datatable-striped p-datatable-responsive-demo px-2"
-      >
-        <Column header="Title" field="title">
-          <template #body="slotProps">
-            <span class="p-column-title">Title</span>
-            {{ slotProps.data.title }}
-          </template>
-        </Column>
-        <Column header="Performer" field="performer">
-          <template #body="slotProps">
-            <span class="p-column-title">Performer</span>
-            {{ slotProps.data.performer }}
-          </template>
-        </Column>
-        <Column header="Deadline" field="deadline">
-          <template #body="slotProps">
-            <span class="p-column-title">Deadline</span>
-            {{ slotProps.data.deadline }}
-          </template>
-        </Column>
-        <Column header="Edit" field="edit">
-          <template #body="slotProps">
-            <div class="p-column-title">Edit</div>
-            <router-link
-              v-if="slotProps.data.status === 0"
-              :to="{ name: 'EditTask', params: { id: slotProps.data.id } }"
-              class="cursor-pointer"
-            >
-              <b-icon icon="pencil" variant="success"> </b-icon>
-            </router-link>
-          </template>
-        </Column>
-        <Column header="Preview" field="preview">
-          <template #body="slotProps">
-            <div class="p-column-title">Preview</div>
-            <router-link
-              :to="{ name: 'Preview', params: { id: slotProps.data.id } }"
-              class="cursor-pointer"
-            >
-              <b-icon icon="search" variant="success"> </b-icon>
-            </router-link>
-          </template>
-        </Column>
-        <Column header="Add comment" field="addComment">
-          <template #body="slotProps">
-            <div class="p-column-title">Add comment</div>
-            <span
-              class="cursor-pointer"
-              @click="openModalComment(slotProps.data.id)"
-            >
-              <b-icon icon="plus-square-fill" variant="success"> </b-icon>
-            </span>
-          </template>
-        </Column>
-        <Column header="Delete task" field="deleteTask">
-          <template #body="slotProps">
-            <div class="p-column-title">Delete task</div>
-            <span
-              class="cursor-pointer"
-              v-if="slotProps.data.status === 0"
-              @click="deleteTask(slotProps.data.id)"
-            >
-              <b-icon icon="x-square-fill" variant="danger"> </b-icon>
-            </span>
-          </template>
-        </Column>
-      </DataTable>
-    </Card>
+        <DataTable
+          :value="tasks"
+          show-gridlines
+          class="p-datatable-striped p-datatable-responsive-demo px-2"
+        >
+          <Column header="Title" field="title">
+            <template #body="slotProps">
+              <span class="p-column-title">Title</span>
+              {{ slotProps.data.title }}
+            </template>
+          </Column>
+          <Column header="Performer" field="performer">
+            <template #body="slotProps">
+              <span class="p-column-title">Performer</span>
+              {{ slotProps.data.performer }}
+            </template>
+          </Column>
+          <Column header="Deadline" field="deadline">
+            <template #body="slotProps">
+              <span class="p-column-title">Deadline</span>
+              {{ slotProps.data.deadline }}
+            </template>
+          </Column>
+          <Column header="Edit" field="edit">
+            <template #body="slotProps">
+              <div class="p-column-title">Edit</div>
+              <router-link
+                v-if="slotProps.data.status === 0"
+                :to="{ name: 'EditTask', params: { id: slotProps.data.id } }"
+                class="cursor-pointer"
+              >
+                <b-icon icon="pencil" variant="success"> </b-icon>
+              </router-link>
+            </template>
+          </Column>
+          <Column header="Preview" field="preview">
+            <template #body="slotProps">
+              <div class="p-column-title">Preview</div>
+              <router-link
+                :to="{ name: 'Preview', params: { id: slotProps.data.id } }"
+                class="cursor-pointer"
+              >
+                <b-icon icon="search" variant="success"> </b-icon>
+              </router-link>
+            </template>
+          </Column>
+          <Column header="Add comment" field="addComment">
+            <template #body="slotProps">
+              <div class="p-column-title">Add comment</div>
+              <span
+                class="cursor-pointer"
+                @click="openModalComment(slotProps.data.id)"
+              >
+                <b-icon icon="plus-square-fill" variant="success"> </b-icon>
+              </span>
+            </template>
+          </Column>
+          <Column header="Delete" field="deleteTask">
+            <template #body="slotProps">
+              <div class="p-column-title">Delete</div>
+              <span
+                class="cursor-pointer"
+                v-if="slotProps.data.status === 0"
+                @click="deleteTask(slotProps.data.id)"
+              >
+                <b-icon icon="x-square-fill" variant="danger"> </b-icon>
+              </span>
+            </template>
+          </Column>
+        </DataTable>
+      </Card>
+    </template>
   </div>
 </template>
 <script>
 import DataTable from "primevue/datatable";
 import Column from "primevue/column";
 import Card from "../components/shared/Card";
+import Loader from "../components/shared/Loader";
 import Swal from "sweetalert2";
 import { mapState } from "vuex";
 
@@ -122,6 +128,7 @@ export default {
     DataTable,
     Column,
     Card,
+    Loader,
   },
   data() {
     return {
@@ -133,7 +140,7 @@ export default {
     this.getTasks();
   },
   computed: {
-    ...mapState(["tasks"]),
+    ...mapState(["tasks", "loading"]),
     editingTask() {
       return this.tasks.find((el) => el.id === this.addCommentTaskId);
     },

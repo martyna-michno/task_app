@@ -1,5 +1,5 @@
 export const SPORT_CATEGORIES = [
-  { value: 0, text: "Please select an option" },
+  { value: 0, text: "Select an option" },
   { value: 1, text: "Running training" },
   { value: 3, text: "Dancing training" },
   { value: 4, text: "Crossfit training" },

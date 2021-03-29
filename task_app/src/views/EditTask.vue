@@ -1,15 +1,15 @@
 <template>
   <div>
     <router-link
-        :to="{ name: 'Preview', params: { id: this.$route.params.id } }"
-        class="d-flex justify-content-end cursor-pointer font-weight-bold color-purple mb-2 text-decoration-none"
+      :to="{ name: 'Preview', params: { id: this.$route.params.id } }"
+      class="d-flex justify-content-end cursor-pointer font-weight-bold color-purple mb-2 text-decoration-none"
     >
-      Switch to preview mode
+      Switch to the preview mode
       <span class="ml-2">
         <b-icon icon="search"></b-icon>
       </span>
     </router-link>
-    <FormTask :mode="MODES.EDIT" :id="id"/>
+    <FormTask :mode="MODES.EDIT" :id="id" />
   </div>
 </template>
 <script>

@@ -1,27 +1,25 @@
 <template>
   <Card :title="'Home page'">
     <div class="home d-flex align-items-center flex-column">
-      Hello, here is
-      <div class="logo px-2 font-weight-500">
+      <span> Hello, here is </span>
+      <div class="logo px-2 font-weight-bold mb-2 cursor-pointer">
         complete.it
       </div>
-      - app that you can use to
+      <span> - app that you can use to </span>
       <router-link
-          :to="{ name: 'AddTask' }"
-          class="d-flex justify-content-end cursor-pointer font-weight-bold color-purple text-decoration-none"
+        :to="{ name: 'AddTask' }"
+        class="d-flex justify-content-end cursor-pointer font-weight-bold color-purple text-decoration-none mb-2"
       >
         create new tasks
-
       </router-link>
-       and
+      <span> and </span>
       <router-link
-          :to="{ name: 'List' }"
-          class="d-flex justify-content-end cursor-pointer font-weight-bold color-purple text-decoration-none"
+        :to="{ name: 'List' }"
+        class="d-flex justify-content-end cursor-pointer font-weight-bold color-purple text-decoration-none mb-2"
       >
         manage exisiting ones.
-
       </router-link>
-      Have fun!
+      <span> Have fun! </span>
     </div>
   </Card>
 </template>
@@ -41,6 +39,12 @@ export default {
   border-radius: 5px;
   color: $primary;
   text-transform: uppercase;
-  border: 1px solid $primary;
+  border: 2px solid $primary;
+}
+.home {
+  font-size: 20px;
+  span {
+    margin-bottom: 0.5rem;
+  }
 }
 </style>

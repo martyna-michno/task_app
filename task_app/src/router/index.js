@@ -5,6 +5,7 @@ import AddTask from "../views/AddTask";
 import EditTask from "../views/EditTask";
 import List from "../views/List";
 import Preview from "@/views/Preview";
+import PageNotFound from "@/views/PageNotFound";
 
 Vue.use(VueRouter);
 
@@ -35,6 +36,11 @@ const routes = [
     name: "Preview",
     component: Preview,
     props: true,
+  },
+  {
+    path: "*",
+    name: "PageNotFound",
+    component: PageNotFound,
   },
 ];
 

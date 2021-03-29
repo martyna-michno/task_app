@@ -2,6 +2,7 @@ import Vue from "vue";
 import Vuex from "vuex";
 import TaskService from "@/services/TaskService.js";
 import router from "@/router";
+import Swal from "sweetalert2";
 import { SPORT_CATEGORIES, STATUSES } from "@/consts";
 
 Vue.use(Vuex);
@@ -57,8 +58,8 @@ export default new Vuex.Store({
         .then(() => {
           commit("ADD_TASK", payload);
         })
-        .catch((err) => {
-          console.log(err);
+        .catch(() => {
+          Swal.fire("Error", "Something went wrong", "error");
         })
         .finally(() => {
           commit("CHANGE_LOADING_STATUS", false);
@@ -70,8 +71,8 @@ export default new Vuex.Store({
         .then(() => {
           commit("ADD_COMMENT", payload);
         })
-        .catch((err) => {
-          console.log(err);
+        .catch(() => {
+          Swal.fire("Error", "Something went wrong", "error");
         })
         .finally(() => {
           commit("CHANGE_LOADING_STATUS", false);
@@ -83,8 +84,8 @@ export default new Vuex.Store({
         .then(({ data }) => {
           commit("SET_TASKS", data);
         })
-        .catch((err) => {
-          console.log(err);
+        .catch(() => {
+          Swal.fire("Error", "Something went wrong", "error");
         })
         .finally(() => {
           commit("CHANGE_LOADING_STATUS", false);
@@ -96,8 +97,8 @@ export default new Vuex.Store({
         .then(() => {
           commit("SET_TASKS_AFTER_DELETE", payload);
         })
-        .catch((err) => {
-          console.log(err);
+        .catch(() => {
+          Swal.fire("Error", "Something went wrong", "error");
         })
         .finally(() => {
           commit("CHANGE_LOADING_STATUS", false);
@@ -109,8 +110,8 @@ export default new Vuex.Store({
         .then(({ data }) => {
           commit("SET_TASK", data);
         })
-        .catch((err) => {
-          console.log(err);
+        .catch(() => {
+          Swal.fire("Error", "Something went wrong", "error");
           router.push({
             name: "List",
           });
@@ -125,8 +126,8 @@ export default new Vuex.Store({
         .then(({ data }) => {
           commit("EDIT_TASK", data);
         })
-        .catch((err) => {
-          console.log(err);
+        .catch(() => {
+          Swal.fire("Error", "Something went wrong", "error");
         })
         .finally(() => {
           commit("CHANGE_LOADING_STATUS", false);

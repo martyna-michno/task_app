@@ -1,15 +1,17 @@
 <template>
   <Card>
-<div class="d-flex align-items-center justify-content-center w-100 not-found">
-  page not found
-</div>
+    <div
+      class="d-flex align-items-center justify-content-center w-100 not-found"
+    >
+      page not found
+    </div>
   </Card>
 </template>
 
 <script>
 import Card from "../components/shared/Card";
 export default {
-  name: "Home",
+  name: "PageNotFound",
   components: {
     Card,
   },

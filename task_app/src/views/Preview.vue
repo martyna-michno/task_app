@@ -1,13 +1,15 @@
 <template>
   <div>
-    <template v-if="loading"> Loading... </template>
+    <template v-if="loading">
+      <Loader />
+    </template>
     <template v-else>
       <router-link
         v-if="taskWithCategoryAndStatusValues.status.value === 0"
-        :to="{ name: 'EditTask', params: { id: this.$route.params.id } }"
+        :to="{ name: 'EditTask', params: { id: this.id } }"
         class="d-flex justify-content-end cursor-pointer font-weight-bold color-purple mb-2 text-decoration-none"
       >
-        Switch to edit mode
+        Switch to the edit mode
         <span class="ml-2">
           <b-icon icon="pencil"></b-icon>
         </span>
@@ -15,58 +17,64 @@
       <Card>
         <div id="preview" class="p-4">
           <div class="row">
-            <div class="col-md-3 d-flex font-weight-500">Title</div>
-            <div class="col-md-9 d-flex font-weight-500">
+            <div class="col-md-3 d-flex font-weight-bold">Title</div>
+            <div class="col-md-9 d-flex">
               {{ taskWithCategoryAndStatusValues.title }}
             </div>
           </div>
           <div class="row mt-4">
-            <div class="col-md-3 d-flex font-weight-500">Description</div>
-            <div class="col-md-9 d-flex font-weight-500">
+            <div class="col-md-3 d-flex font-weight-bold">Description</div>
+            <div class="col-md-9 d-flex">
               {{ taskWithCategoryAndStatusValues.text }}
             </div>
           </div>
           <div class="row mt-4">
-            <div class="col-md-3 d-flex font-weight-500">Perfomer</div>
-            <div class="col-md-9 d-flex font-weight-500">
+            <div class="col-md-3 d-flex font-weight-bold">Perfomer</div>
+            <div class="col-md-9 d-flex">
               {{ taskWithCategoryAndStatusValues.performer }}
             </div>
           </div>
-          <div v-if="taskWithCategoryAndStatusValues.category.value !== 0" class="row mt-4">
-            <div class="col-md-3 d-flex font-weight-500">Category</div>
-            <div class="col-md-9 d-flex font-weight-500">
+          <div
+            v-if="taskWithCategoryAndStatusValues.category.value !== 0"
+            class="row mt-4"
+          >
+            <div class="col-md-3 d-flex font-weight-bold">Category</div>
+            <div class="col-md-9 d-flex">
               {{ taskWithCategoryAndStatusValues.category.text }}
             </div>
           </div>
           <div class="row mt-4">
-            <div class="col-md-3 d-flex font-weight-500">Status</div>
-            <div class="col-md-9 d-flex font-weight-500">
+            <div class="col-md-3 d-flex font-weight-bold">Status</div>
+            <div class="col-md-9 d-flex">
               {{ taskWithCategoryAndStatusValues.status.text }}
             </div>
           </div>
           <div class="row mt-4">
-            <div class="col-md-3 d-flex font-weight-500">Deadline</div>
-            <div class="col-md-9 d-flex font-weight-500">
+            <div class="col-md-3 d-flex font-weight-bold">Deadline</div>
+            <div class="col-md-9 d-flex">
               {{ taskWithCategoryAndStatusValues.deadline }}
             </div>
           </div>
-          <div v-if="taskWithCategoryAndStatusValues.tags.length" class="row mt-4">
-            <div class="col-md-3 d-flex font-weight-500">Tags</div>
-            <div class="col-md-9 d-flex font-weight-500">
+          <div
+            v-if="taskWithCategoryAndStatusValues.tags.length"
+            class="row mt-4"
+          >
+            <div class="col-md-3 d-flex font-weight-bold">Tags</div>
+            <div class="col-md-9 d-flex">
               <div
-                v-for="(tag, index) in taskWithCategoryAndStatusValues.tags"
-                :key="index"
-                class="px-2 py-1 font-weight-500 tag-pill mr-2"
+                v-for="tag in taskWithCategoryAndStatusValues.tags"
+                :key="`${tag}_${Math.floor(Math.random() * 100000)}`"
+                class="px-2 py-1 font-weight-bold tag-pill mr-2"
               >
                 {{ tag }}
               </div>
             </div>
           </div>
           <div class="row mt-4">
-            <div class="col-md-3 d-flex font-weight-500">
+            <div class="col-md-3 d-flex font-weight-bold">
               Level of difficulty
             </div>
-            <div class="col-md-9 d-flex font-weight-500">
+            <div class="col-md-9 d-flex">
               <b-form-rating
                 id="rating-inline"
                 variant="primary"
@@ -77,34 +85,34 @@
             </div>
           </div>
           <template v-if="taskWithCategoryAndStatusValues.files.length">
-          <div class="row mt-4">
-            <div
-              class="alert background-pink d-flex align-items-center justify-content-center flex-column w-100"
-              role="alert"
-            >
-              Click on the picture to download it.
+            <div class="row mt-4">
+              <div
+                class="alert background-pink d-flex align-items-center justify-content-center flex-column w-100"
+                role="alert"
+              >
+                Click on the picture to download it.
+              </div>
             </div>
-          </div>
-          <div class="row mt-4">
-            <div class="col-md-3 d-flex font-weight-500">Files</div>
-            <div class="col-md-9 d-flex">
-              <VuePerfectScrollbar class="scroll-area d-flex" v-once>
-                <div
-                  class="image-container m-2"
-                  v-for="file in taskWithCategoryAndStatusValues.files"
-                  :key="`${file}_${Math.random() * 99999}`"
-                >
-                  <a :href="file" :download="'image.jpg'">
-                    <img :src="file" class="img-miniature" />
-                  </a>
-                </div>
-              </VuePerfectScrollbar>
+            <div class="row mt-4">
+              <div class="col-md-3 d-flex font-weight-bold">Files</div>
+              <div class="col-md-9 d-flex">
+                <VuePerfectScrollbar class="scroll-area d-flex" v-once>
+                  <div
+                    class="image-container m-2"
+                    v-for="file in taskWithCategoryAndStatusValues.files"
+                    :key="`${file}_${Math.floor(Math.random() * 100000)}`"
+                  >
+                    <a :href="file" :download="'image.jpg'">
+                      <img :src="file" class="img-miniature" />
+                    </a>
+                  </div>
+                </VuePerfectScrollbar>
+              </div>
             </div>
-          </div>
           </template>
           <div class="row mt-4">
-            <div class="col-md-3 d-flex font-weight-500">Training fasting</div>
-            <div class="col-md-9 d-flex font-weight-500">
+            <div class="col-md-3 d-flex font-weight-bold">Training fasting</div>
+            <div class="col-md-9 d-flex">
               Training can
               {{
                 taskWithCategoryAndStatusValues.canFasting === "false"
@@ -118,14 +126,12 @@
             class="row mt-4"
             v-if="taskWithCategoryAndStatusValues.comments.length"
           >
-            <div class="col-md-3 d-flex font-weight-500">Comments</div>
+            <div class="col-md-3 d-flex font-weight-bold">Comments</div>
             <div class="col-md-9 d-flex">
               <ul class="list-style-none w-100">
                 <li
-                  v-for="(
-                    comment, index
-                  ) in taskWithCategoryAndStatusValues.comments"
-                  :key="index"
+                  v-for="comment in taskWithCategoryAndStatusValues.comments"
+                  :key="`${comment}_${Math.floor(Math.random() * 100000)}`"
                   class="mb-2 p-2 background-pink list-item"
                 >
                   {{ comment }}
@@ -140,6 +146,7 @@
 </template>
 <script>
 import Card from "../components/shared/Card";
+import Loader from "../components/shared/Loader";
 import VuePerfectScrollbar from "vue-perfect-scrollbar";
 import { mapGetters, mapState } from "vuex";
 
@@ -148,6 +155,13 @@ export default {
   components: {
     Card,
     VuePerfectScrollbar,
+    Loader,
+  },
+  props: {
+    id: {
+      type: [String, Number],
+      required: true,
+    },
   },
   computed: {
     ...mapState(["loading"]),
