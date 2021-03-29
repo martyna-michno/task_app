@@ -2,7 +2,7 @@
   <Card :title="title">
     <form class="add-form" @submit.prevent="save">
       <div class="row">
-        <div class="col-md-3 d-flex font-weight-500">Task's title</div>
+        <div class="col-md-3 d-flex font-weight-500">Title*</div>
         <div class="col-md-9">
           <b-form-input
             v-model="form.title"
@@ -11,7 +11,7 @@
         </div>
       </div>
       <div class="row mt-4">
-        <div class="col-md-3 d-flex font-weight-500">Task's description</div>
+        <div class="col-md-3 d-flex font-weight-500">Description*</div>
         <div class="col-md-9">
           <b-form-textarea
             id="textarea"
@@ -22,12 +22,23 @@
         </div>
       </div>
       <div class="row mt-4">
-        <div class="col-md-3 d-flex font-weight-500">Task perfomer</div>
+        <div class="col-md-3 d-flex font-weight-500">Performer*</div>
         <div class="col-md-9">
           <b-form-input
             v-model="form.performer"
             placeholder="Enter task performer"
           ></b-form-input>
+        </div>
+      </div>
+      <div class="row mt-4">
+        <div class="col-md-3 d-flex font-weight-500">Deadline*</div>
+        <div class="col-md-9">
+          <b-form-datepicker
+            v-model="form.deadline"
+            :min="min"
+            locale="en"
+            nav-button-variant="primary"
+          ></b-form-datepicker>
         </div>
       </div>
       <div class="row mt-4">
@@ -38,17 +49,6 @@
             :options="SPORT_CATEGORIES"
             :plain="true"
           ></b-form-select>
-        </div>
-      </div>
-      <div class="row mt-4">
-        <div class="col-md-3 d-flex font-weight-500">Deadline</div>
-        <div class="col-md-9">
-          <b-form-datepicker
-            v-model="form.deadline"
-            :min="min"
-            locale="en"
-            nav-button-variant="primary"
-          ></b-form-datepicker>
         </div>
       </div>
       <div class="row mt-4">
@@ -98,21 +98,23 @@
         </div>
         <div class="row mt-4">
           <div class="col-md-3 d-flex font-weight-500">Pictures</div>
-          <div class="col-md-9 d-flex flex-wrap">
-            <div
-              class="image-container m-2"
-              v-for="file in form.files"
-              :key="`${file}_${Math.random() * 99999}`"
-            >
-              <span
-                v-if="!isAddMode"
-                class="delete-button d-flex align-items-center justify-content-center cursor-pointer mb-05"
+          <div class="col-md-9 d-flex">
+            <VuePerfectScrollbar class="d-flex scroll-area">
+              <div
+                class="image-container m-2"
+                v-for="file in form.files"
+                :key="`${file}_${Math.random() * 99999}`"
               >
-                <b-icon icon="x" variant="danger" @click="deleteFile(file)">
-                </b-icon>
-              </span>
-              <img :src="file" class="img" />
-            </div>
+                <span
+                  v-if="!isAddMode"
+                  class="delete-button d-flex align-items-center justify-content-center cursor-pointer mb-05"
+                >
+                  <b-icon icon="x" variant="danger" @click="deleteFile(file)">
+                  </b-icon>
+                </span>
+                <img :src="file" class="img-miniature" />
+              </div>
+            </VuePerfectScrollbar>
           </div>
         </div>
       </template>
@@ -151,6 +153,7 @@
           task list.
         </p>
       </div>
+      <div class="row m2-4 mx-0">*Required fields</div>
       <div class="row mt-4 d-flex justify-content-end mx-0">
         <b-button
           v-if="isAddMode"
@@ -167,11 +170,15 @@
 <script>
 import Card from "../components/shared/Card";
 import { SPORT_CATEGORIES, MODES, STATUSES } from "@/consts";
+import Swal from "sweetalert2";
+import { mapState } from "vuex";
+import VuePerfectScrollbar from "vue-perfect-scrollbar";
 
 export default {
   name: "FormTask",
   components: {
     Card,
+    VuePerfectScrollbar,
   },
   props: {
     id: {
@@ -200,6 +207,7 @@ export default {
     },
   },
   computed: {
+    ...mapState(["tasks", "task"]),
     isAddMode() {
       return this.mode === MODES.ADD;
     },
@@ -212,11 +220,16 @@ export default {
     showAddFile() {
       return this.isAddMode ? true : !this.form.files.length;
     },
+    editingTask() {
+      return this.$store.getters.getTaskById;
+    },
   },
   created() {
     this.createFreshFormData();
     if (!this.isAddMode) {
-      console.log("get task by id");
+      this.$store.dispatch("getTaskById", this.id).then(() => {
+        this.form = this.task;
+      });
     }
     this.SPORT_CATEGORIES = SPORT_CATEGORIES;
     this.STATUSES = STATUSES;
@@ -250,9 +263,39 @@ export default {
     },
     save() {
       if (this.isAddMode) {
-        console.log("add new task");
+        this.$store.dispatch("addTask", this.form).then(() => {
+          this.createFreshFormData();
+          Swal.fire({
+            position: "top-end",
+            icon: "success",
+            title: "Your task has been saved",
+            showConfirmButton: false,
+            timer: 1500,
+          }).then(() => {
+            this.$router.push({
+              name: "List",
+            });
+          });
+        });
       } else {
-        console.log("edit task");
+        this.$store
+          .dispatch("editTask", {
+            id: this.id,
+            task: this.form,
+          })
+          .then(() => {
+            Swal.fire({
+              position: "top-end",
+              icon: "success",
+              title: "Your edition has been saved",
+              showConfirmButton: false,
+              timer: 1500,
+            }).then(() => {
+              this.$router.push({
+                name: "List",
+              });
+            });
+          });
       }
     },
     deleteFile(file) {
@@ -265,37 +308,6 @@ export default {
 @media (min-width: 600px) {
   .add-form {
     margin: 0 10vw 0 10vw;
-  }
-}
-
-.image-container {
-  height: 20vh;
-  position: relative;
-
-  .icon-index {
-    z-index: 1000;
-  }
-
-  .icons {
-    position: absolute;
-    z-index: 1000;
-    top: 6px;
-    right: 6px;
-  }
-
-  .delete-button {
-    position: absolute;
-    top: 6px;
-    right: 6px;
-    width: 15px;
-    height: 15px;
-    background: white;
-  }
-
-  .img {
-    display: block;
-    width: auto;
-    height: 100%;
   }
 }
 </style>

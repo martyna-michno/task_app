@@ -3,8 +3,8 @@
     <b-modal id="comment-modal" hide-footer hide-header>
       <div>
         <div
-            class="alert background-pink d-flex align-items-center justify-content-center flex-column mt-4"
-            role="alert"
+          class="alert background-pink d-flex align-items-center justify-content-center flex-column mt-4"
+          role="alert"
         >
           Comments are unremovable, you can read them only in preview mode.
         </div>
@@ -12,34 +12,34 @@
           <div class="col-md-3 d-flex font-weight-500">Comment task</div>
           <div class="col-md-9">
             <b-form-textarea
-                id="textarea"
-                v-model="comment"
-                placeholder="Enter task's comment"
-                rows="3"
+              id="textarea"
+              v-model="comment"
+              placeholder="Enter task's comment"
+              rows="3"
             ></b-form-textarea>
           </div>
         </div>
         <div class="row mt-4 d-flex justify-content-end">
           <b-button @click="hideModal" variant="outline-danger" class="mr-2"
-          >Cancel</b-button
+            >Cancel</b-button
           >
           <b-button @click="addComment" variant="success" class="mr-2"
-          >Add comment</b-button
+            >Add comment</b-button
           >
         </div>
       </div>
     </b-modal>
     <Card :title="'List of added tasks'">
       <div
-          class="alert background-pink d-flex align-items-center justify-content-center flex-column mx-2"
-          role="alert"
+        class="alert background-pink d-flex align-items-center justify-content-center flex-column mx-2"
+        role="alert"
       >
         You can edit or delete only these tasks, which status is "new".
       </div>
       <DataTable
-          :value="tasks"
-          show-gridlines
-          class="p-datatable-striped p-datatable-responsive-demo px-2"
+        :value="tasks"
+        show-gridlines
+        class="p-datatable-striped p-datatable-responsive-demo px-2"
       >
         <Column header="Title" field="title">
           <template #body="slotProps">
@@ -63,9 +63,9 @@
           <template #body="slotProps">
             <div class="p-column-title">Edit</div>
             <router-link
-                v-if="slotProps.data.status === 0"
-                :to="{ name: 'EditTask', params: { id: slotProps.data.id } }"
-                class="cursor-pointer"
+              v-if="slotProps.data.status === 0"
+              :to="{ name: 'EditTask', params: { id: slotProps.data.id } }"
+              class="cursor-pointer"
             >
               <b-icon icon="pencil" variant="success"> </b-icon>
             </router-link>
@@ -75,8 +75,8 @@
           <template #body="slotProps">
             <div class="p-column-title">Preview</div>
             <router-link
-                :to="{ name: 'Preview', params: { id: slotProps.data.id } }"
-                class="cursor-pointer"
+              :to="{ name: 'Preview', params: { id: slotProps.data.id } }"
+              class="cursor-pointer"
             >
               <b-icon icon="search" variant="success"> </b-icon>
             </router-link>
@@ -86,8 +86,8 @@
           <template #body="slotProps">
             <div class="p-column-title">Add comment</div>
             <span
-                class="cursor-pointer"
-                @click="openModalComment(slotProps.data.id)"
+              class="cursor-pointer"
+              @click="openModalComment(slotProps.data.id)"
             >
               <b-icon icon="plus-square-fill" variant="success"> </b-icon>
             </span>
@@ -97,9 +97,9 @@
           <template #body="slotProps">
             <div class="p-column-title">Delete task</div>
             <span
-                class="cursor-pointer"
-                v-if="slotProps.data.status === 0"
-                @click="deleteTask(slotProps.data.id)"
+              class="cursor-pointer"
+              v-if="slotProps.data.status === 0"
+              @click="deleteTask(slotProps.data.id)"
             >
               <b-icon icon="x-square-fill" variant="danger"> </b-icon>
             </span>
@@ -114,7 +114,7 @@ import DataTable from "primevue/datatable";
 import Column from "primevue/column";
 import Card from "../components/shared/Card";
 import Swal from "sweetalert2";
-import {TASKS} from "@/db";
+import { mapState } from "vuex";
 
 export default {
   name: "List",
@@ -127,16 +127,20 @@ export default {
     return {
       addCommentTaskId: null,
       comment: "",
-      tasks: [],
     };
   },
   mounted() {
     this.getTasks();
   },
+  computed: {
+    ...mapState(["tasks"]),
+    editingTask() {
+      return this.tasks.find((el) => el.id === this.addCommentTaskId);
+    },
+  },
   methods: {
     getTasks() {
-      console.log('get tasks');
-      this.tasks = TASKS;
+      this.$store.dispatch("getTasks");
     },
     deleteTask(id) {
       Swal.fire({
@@ -147,8 +151,10 @@ export default {
         confirmButtonColor: "#333d79ff",
         cancelButtonColor: "#990011FF",
         confirmButtonText: "Yes, delete it!",
-      }).then(() => {
-        console.log(id)
+      }).then((result) => {
+        if (result.isConfirmed) {
+          this.$store.dispatch("deleteTask", id);
+        }
       });
     },
     openModalComment(id) {
@@ -167,8 +173,23 @@ export default {
         });
         return;
       }
-      console.log('add comm')
-    }
+      this.$store
+        .dispatch("addComment", {
+          id: this.addCommentTaskId,
+          comments: [...this.editingTask.comments, this.comment],
+        })
+        .then(() => {
+          Swal.fire({
+            position: "top-end",
+            icon: "success",
+            title: "Your comment has been saved",
+            showConfirmButton: false,
+            timer: 1000,
+          });
+          this.comment = "";
+          this.hideModal();
+        });
+    },
   },
 };
 </script>
