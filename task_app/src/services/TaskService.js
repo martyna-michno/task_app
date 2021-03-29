@@ -22,10 +22,9 @@ export default {
     return api.post("/tasks", task);
   },
   addComment(payload) {
-    const body = {
+    return api.patch(`/tasks/${payload.id}`, {
       comments: payload.comments,
-    };
-    return api.patch(`/tasks/${payload.id}`, body);
+    });
   },
   editTask(payload) {
     return api.put(`/tasks/${payload.id}`, payload.task);

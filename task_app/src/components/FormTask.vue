@@ -76,8 +76,8 @@
           ></b-form-rating>
         </div>
       </div>
-      <div class="row mt-4" v-if="showAddFile">
-        <div class="col-md-3 d-flex font-weight-500">Files</div>
+      <div v-if="showAddFile" class="row mt-4">
+        <div class="col-md-3 d-flex font-weight-500">Photos upload</div>
         <div class="col-md-9">
           <b-form-file
             v-model="files"
@@ -89,7 +89,7 @@
       <template v-if="form.files.length">
         <div class="row mt-4 mx-0 w-100">
           <div
-            class="alert background-pink d-flex align-items-center justify-content-center flex-column mt-4 w-100"
+            class="alert background-pink d-flex align-items-center justify-content-center flex-column mt-4 w-100 text-center"
             role="alert"
           >
             Operations on photos will be permanently saved after pressing the
@@ -261,24 +261,24 @@ export default {
     resetForm() {
       this.createFreshFormData();
     },
-    save() {
-      if (this.isAddMode) {
-        this.$store.dispatch("addTask", this.form).then(() => {
-          this.createFreshFormData();
-          Swal.fire({
-            position: "top-end",
-            icon: "success",
-            title: "Your task has been saved",
-            showConfirmButton: false,
-            timer: 1500,
-          }).then(() => {
-            this.$router.push({
-              name: "List",
-            });
+    addTask(){
+      this.$store.dispatch("addTask", this.form).then(() => {
+        this.createFreshFormData();
+        Swal.fire({
+          position: "top-end",
+          icon: "success",
+          title: "Your task has been saved",
+          showConfirmButton: false,
+          timer: 1500,
+        }).then(() => {
+          this.$router.push({
+            name: "List",
           });
         });
-      } else {
-        this.$store
+      });
+    },
+    editTask() {
+      this.$store
           .dispatch("editTask", {
             id: this.id,
             task: this.form,
@@ -296,10 +296,16 @@ export default {
               });
             });
           });
+    },
+    save() {
+      if (this.isAddMode) {
+        this.addTask();
+      } else {
+        this.editTask();
       }
     },
     deleteFile(file) {
-      this.form.files = this.form.files.filter((el) => el !== file);
+      this.form.files = this.form.files.filter(el => el !== file);
     },
   },
 };

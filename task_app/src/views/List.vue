@@ -3,7 +3,7 @@
     <b-modal id="comment-modal" hide-footer hide-header>
       <div>
         <div
-          class="alert background-pink d-flex align-items-center justify-content-center flex-column mt-4"
+          class="alert background-pink d-flex align-items-center justify-content-center flex-column mt-4 text-center"
           role="alert"
         >
           Comments are unremovable, you can read them only in preview mode.

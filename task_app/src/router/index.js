@@ -4,6 +4,8 @@ import Home from "../views/Home.vue";
 import AddTask from "../views/AddTask";
 import EditTask from "../views/EditTask";
 import List from "../views/List";
+import Preview from "@/views/Preview";
+
 Vue.use(VueRouter);
 
 const routes = [
@@ -26,6 +28,12 @@ const routes = [
     path: "/edit/:id",
     name: "EditTask",
     component: EditTask,
+    props: true,
+  },
+  {
+    path: "/preview/:id",
+    name: "Preview",
+    component: Preview,
     props: true,
   },
 ];
