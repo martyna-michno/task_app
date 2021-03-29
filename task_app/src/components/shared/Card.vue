@@ -1,5 +1,5 @@
 <template>
-  <div class="app-card">
+  <div class="app-card shadow">
     <div v-if="title" class="app-card-title p-2 font-weight-500">
       {{ title }}
     </div>
@@ -23,9 +23,6 @@ export default {
 .app-card {
   background: white;
   text-align: initial;
-  -webkit-box-shadow: 10px 5px 25px -8px rgba(128, 128, 128, 1);
-  -moz-box-shadow: 10px 5px 25px -8px rgba(128, 128, 128, 1);
-  box-shadow: 10px 5px 25px -8px rgba(128, 128, 128, 1);
 }
 
 .app-card-title {

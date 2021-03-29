@@ -1,49 +1,23 @@
 <template>
   <div>
-    <template v-if="loading">
-      <Loader />
-    </template>
+    <Loader v-if="loading" />
     <template v-else>
-      <b-modal id="comment-modal" hide-footer hide-header>
-        <div>
-          <div
-            class="alert background-pink d-flex align-items-center justify-content-center flex-column mt-4 text-center"
-            role="alert"
-          >
-            Comments are unremovable, you can read them only in preview mode.
-          </div>
-          <div class="row mt-4">
-            <div class="col-md-3 d-flex font-weight-500">Comment</div>
-            <div class="col-md-9">
-              <b-form-textarea
-                id="textarea"
-                v-model="comment"
-                placeholder="Enter task's comment"
-                rows="3"
-              ></b-form-textarea>
-            </div>
-          </div>
-          <div class="row mt-4 d-flex justify-content-end">
-            <b-button @click="hideModal" variant="outline-danger" class="mr-2"
-              >Cancel</b-button
-            >
-            <b-button @click="addComment" variant="success" class="mr-2"
-              >Add comment</b-button
-            >
-          </div>
-        </div>
-      </b-modal>
+      <CommentModal :id="addCommentTaskId" :editing-task="editingTask" />
       <Card :title="'The List of added tasks'">
         <div
-          class="alert background-pink d-flex align-items-center justify-content-center flex-column mx-2"
+          class="alert shadow background-pink d-flex align-items-center justify-content-center flex-column mx-2"
           role="alert"
         >
           You can edit or delete only tasks with "new" status.
         </div>
         <DataTable
           :value="tasks"
-          show-gridlines
+          :paginator="true"
+          :rows="10"
+          :rowsPerPageOptions="[5, 10, 20]"
           class="p-datatable-striped p-datatable-responsive-demo px-2"
+          show-gridlines
+          paginatorTemplate="FirstPageLink PrevPageLink PageLinks NextPageLink LastPageLink RowsPerPageDropdown"
         >
           <Column header="Title" field="title">
             <template #body="slotProps">
@@ -119,6 +93,7 @@ import DataTable from "primevue/datatable";
 import Column from "primevue/column";
 import Card from "../components/shared/Card";
 import Loader from "../components/shared/Loader";
+import CommentModal from "@/components/CommentModal";
 import Swal from "sweetalert2";
 import { mapState } from "vuex";
 
@@ -129,11 +104,11 @@ export default {
     Column,
     Card,
     Loader,
+    CommentModal,
   },
   data() {
     return {
-      addCommentTaskId: null,
-      comment: "",
+      addCommentTaskId: 0,
     };
   },
   mounted() {
@@ -142,7 +117,7 @@ export default {
   computed: {
     ...mapState(["tasks", "loading"]),
     editingTask() {
-      return this.tasks.find((el) => el.id === this.addCommentTaskId);
+      return this.tasks.find((el) => el.id === this.addCommentTaskId) ?? {};
     },
   },
   methods: {
@@ -167,35 +142,6 @@ export default {
     openModalComment(id) {
       this.addCommentTaskId = id;
       this.$bvModal.show("comment-modal");
-    },
-    hideModal() {
-      this.$bvModal.hide("comment-modal");
-    },
-    addComment() {
-      if (this.comment.length < 3) {
-        Swal.fire({
-          icon: "warning",
-          title: "Your comment is too short!",
-          text: "It needs to be minimum 3 characters.",
-        });
-        return;
-      }
-      this.$store
-        .dispatch("addComment", {
-          id: this.addCommentTaskId,
-          comments: [...this.editingTask.comments, this.comment],
-        })
-        .then(() => {
-          Swal.fire({
-            position: "top-end",
-            icon: "success",
-            title: "Your comment has been saved",
-            showConfirmButton: false,
-            timer: 1000,
-          });
-          this.comment = "";
-          this.hideModal();
-        });
     },
   },
 };

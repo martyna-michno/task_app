@@ -1,11 +1,9 @@
 <template>
   <div>
-    <template v-if="loading">
-      <Loader />
-    </template>
+    <Loader v-if="loading" />
     <template v-else>
       <Card :title="title">
-        <form class="add-form" @submit.prevent="save">
+        <form class="mx-2" @submit.prevent="save">
           <div class="row">
             <div class="col-md-3 d-flex font-weight-bold">Title*</div>
             <div class="col-md-9">
@@ -96,7 +94,7 @@
           <template v-if="form.files.length">
             <div class="row mt-4 mx-0 w-100">
               <div
-                class="alert background-pink d-flex align-items-center justify-content-center flex-column mt-4 w-100 text-center"
+                class="alert background-pink d-flex align-items-center justify-content-center shadow flex-column mt-4 w-100 text-center"
                 role="alert"
               >
                 Operations on photos will be permanently saved after pressing
@@ -155,7 +153,7 @@
           </div>
           <div
             v-if="isAddMode"
-            class="alert background-pink d-flex align-items-center justify-content-center flex-column mt-4"
+            class="alert background-pink d-flex align-items-center justify-content-center shadow flex-column mt-4"
             role="alert"
           >
             The created task is automatically assigned the "new" status.
@@ -193,6 +191,7 @@ import { SPORT_CATEGORIES, MODES, STATUSES } from "@/consts";
 import Swal from "sweetalert2";
 import { mapState } from "vuex";
 import VuePerfectScrollbar from "vue-perfect-scrollbar";
+import router from "@/router";
 
 export default {
   name: "FormTask",
@@ -248,9 +247,20 @@ export default {
   created() {
     this.createFreshFormData();
     if (!this.isAddMode) {
-      this.$store.dispatch("getTaskById", this.id).then(() => {
-        this.form = this.task;
-      });
+      this.$store
+        .dispatch("getTaskById", this.id)
+        .then(() => {
+          this.form = this.task;
+        })
+        .catch(() => {
+          Swal.fire("Error", "Something went wrong", "error");
+          router.push({
+            name: "List",
+          });
+        })
+        .finally(() => {
+          this.$store.commit("CHANGE_LOADING_STATUS", false);
+        });
     }
     this.SPORT_CATEGORIES = SPORT_CATEGORIES;
     this.STATUSES = STATUSES;
@@ -283,20 +293,28 @@ export default {
       this.createFreshFormData();
     },
     addTask() {
-      this.$store.dispatch("addTask", this.form).then(() => {
-        this.createFreshFormData();
-        Swal.fire({
-          position: "top-end",
-          icon: "success",
-          title: "Your task has been saved",
-          showConfirmButton: false,
-          timer: 1500,
-        }).then(() => {
-          this.$router.push({
-            name: "List",
+      this.$store
+        .dispatch("addTask", this.form)
+        .then(() => {
+          this.createFreshFormData();
+          Swal.fire({
+            position: "top-end",
+            icon: "success",
+            title: "Your task has been saved",
+            showConfirmButton: false,
+            timer: 1500,
+          }).then(() => {
+            this.$router.push({
+              name: "List",
+            });
           });
+        })
+        .catch(() => {
+          Swal.fire("Error", "Something went wrong", "error");
+        })
+        .finally(() => {
+          this.$store.commit("CHANGE_LOADING_STATUS", false);
         });
-      });
     },
     editTask() {
       this.$store
@@ -316,6 +334,12 @@ export default {
               name: "List",
             });
           });
+        })
+        .catch(() => {
+          Swal.fire("Error", "Something went wrong", "error");
+        })
+        .finally(() => {
+          this.$store.commit("CHANGE_LOADING_STATUS", false);
         });
     },
     save() {
@@ -344,10 +368,3 @@ export default {
   },
 };
 </script>
-<style lang="scss">
-@media (min-width: 600px) {
-  .add-form {
-    margin: 0 10vw 0 10vw;
-  }
-}
-</style>

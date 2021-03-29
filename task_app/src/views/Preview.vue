@@ -1,8 +1,6 @@
 <template>
   <div>
-    <template v-if="loading">
-      <Loader />
-    </template>
+    <Loader v-if="loading" />
     <template v-else>
       <router-link
         v-if="taskWithCategoryAndStatusValues.status.value === 0"
@@ -87,7 +85,7 @@
           <template v-if="taskWithCategoryAndStatusValues.files.length">
             <div class="row mt-4">
               <div
-                class="alert background-pink d-flex align-items-center justify-content-center flex-column w-100"
+                class="alert background-pink d-flex align-items-center justify-content-center flex-column w-100 shadow"
                 role="alert"
               >
                 Click on the picture to download it.
@@ -132,7 +130,7 @@
                 <li
                   v-for="comment in taskWithCategoryAndStatusValues.comments"
                   :key="`${comment}_${Math.floor(Math.random() * 100000)}`"
-                  class="mb-2 p-2 background-pink list-item"
+                  class="mb-2 p-2 background-pink list-item shadow"
                 >
                   {{ comment }}
                 </li>
@@ -149,6 +147,8 @@ import Card from "../components/shared/Card";
 import Loader from "../components/shared/Loader";
 import VuePerfectScrollbar from "vue-perfect-scrollbar";
 import { mapGetters, mapState } from "vuex";
+import Swal from "sweetalert2";
+import router from "@/router";
 
 export default {
   name: "Preview",
@@ -168,14 +168,23 @@ export default {
     ...mapGetters(["taskWithCategoryAndStatusValues"]),
   },
   created() {
-    this.$store.dispatch("getTaskById", this.$route.params.id);
+    this.$store
+      .dispatch("getTaskById", this.$route.params.id)
+      .catch(() => {
+        Swal.fire("Error", "Something went wrong", "error");
+        router.push({
+          name: "List",
+        });
+      })
+      .finally(() => {
+        this.$store.commit("CHANGE_LOADING_STATUS", false);
+      });
   },
 };
 </script>
 <style lang="scss" scoped>
 .list-item {
   border: 1px solid $primary;
-  box-shadow: 5px 5px 15px -5px grey;
 }
 .tag-pill {
   background: $primary;
