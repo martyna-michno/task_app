@@ -15,7 +15,7 @@
           </router-link>
         </li>
         <li>
-          <router-link to="/list" class="px-2 cursor-pointer">
+          <router-link to="/list" class="px-2 cursor-pointer mr-4">
             Tasks list
           </router-link>
         </li>
